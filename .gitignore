@@ -3,8 +3,6 @@
 
 # Laravel
 arena2/vendor/
-arena2/storage/
-arena2/bootstrap/cache/
 
 # Angular
 front-arena/node_modules/
