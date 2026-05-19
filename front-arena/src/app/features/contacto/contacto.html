@@ -1,0 +1,125 @@
+<div class="min-h-screen bg-bg px-6 py-8"
+     style="background-image: radial-gradient(ellipse 800px 500px at 50% -5%, rgba(232,88,26,0.05) 0%, transparent 60%)">
+  <div class="max-w-[860px] mx-auto">
+
+    <!-- HEADER -->
+    <div class="mb-8">
+      <p class="text-[11px] font-bold tracking-[3px] uppercase text-brand mb-2">Roig Arena</p>
+      <h1 class="text-[28px] font-extrabold tracking-tight text-text-primary">Contacto</h1>
+      <p class="text-[14px] text-text-secondary mt-1">Envíanos tu consulta y te responderemos lo antes posible.</p>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="bg-surface-1 border border-[var(--border)] rounded-xl p-6 mb-6">
+      <p class="text-[13px] font-bold text-text-primary mb-4">Nueva consulta</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[12px] font-semibold text-text-secondary">Nombre</label>
+          <input
+            [(ngModel)]="form.nombre"
+            type="text"
+            placeholder="Tu nombre"
+            class="bg-surface-2 border border-[var(--border)] rounded-md px-3 py-2.5 text-[13px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand transition-colors duration-150"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[12px] font-semibold text-text-secondary">Email</label>
+          <input
+            [(ngModel)]="form.email"
+            type="email"
+            placeholder="tu@email.com"
+            class="bg-surface-2 border border-[var(--border)] rounded-md px-3 py-2.5 text-[13px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand transition-colors duration-150"
+          />
+        </div>
+
+      </div>
+
+      <div class="flex flex-col gap-1.5 mb-4">
+        <label class="text-[12px] font-semibold text-text-secondary">Asunto</label>
+        <input
+          [(ngModel)]="form.asunto"
+          type="text"
+          placeholder="¿En qué podemos ayudarte?"
+          class="bg-surface-2 border border-[var(--border)] rounded-md px-3 py-2.5 text-[13px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand transition-colors duration-150"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5 mb-5">
+        <label class="text-[12px] font-semibold text-text-secondary">Mensaje</label>
+        <textarea
+          [(ngModel)]="form.mensaje"
+          rows="4"
+          placeholder="Escribe tu mensaje aquí..."
+          class="bg-surface-2 border border-[var(--border)] rounded-md px-3 py-2.5 text-[13px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand transition-colors duration-150 resize-none"
+        ></textarea>
+      </div>
+
+      <button
+        (click)="enviar()"
+        [disabled]="enviando()"
+        class="w-full bg-brand hover:bg-[#cf4d16] disabled:opacity-45 text-white text-[14px] font-bold py-3 rounded-md transition-all duration-150 hover:-translate-y-px hover:shadow-brand">
+        {{ enviando() ? 'Enviando...' : 'Enviar consulta' }}
+      </button>
+    </div>
+
+    <!-- MIS CONSULTAS -->
+    <div class="bg-surface-1 border border-[var(--border)] rounded-xl p-6">
+
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-[13px] font-bold text-text-primary">
+          Mis consultas
+          @if (consultas().length > 0) {
+            <span class="ml-2 bg-brand/10 text-brand text-[11px] font-bold px-2 py-0.5 rounded-full border border-brand/20">
+              {{ consultas().length }}
+            </span>
+          }
+        </p>
+        @if (consultas().length > 0) {
+          <button
+            (click)="limpiar()"
+            class="text-[12px] font-medium text-text-muted hover:text-error hover:bg-error/10 px-3 py-1.5 rounded-md transition-all duration-150">
+            Limpiar todo
+          </button>
+        }
+      </div>
+
+      <!-- LOADING -->
+      @if (cargando()) {
+        <div class="flex items-center justify-center py-8 gap-3 text-text-secondary text-[13px]">
+          <div class="w-5 h-5 rounded-full border-2 border-border-md border-t-brand animate-spin"></div>
+          Cargando consultas...
+        </div>
+      }
+
+      <!-- VACÍO -->
+      @if (!cargando() && consultas().length === 0) {
+        <div class="text-center py-10">
+          <p class="text-[32px] mb-3">📭</p>
+          <p class="text-[14px] font-semibold text-text-primary mb-1">No tienes consultas</p>
+          <p class="text-[13px] text-text-secondary">Las consultas que envíes aparecerán aquí.</p>
+        </div>
+      }
+
+      <!-- LISTA -->
+      @if (!cargando() && consultas().length > 0) {
+        <div class="flex flex-col gap-3">
+          @for (consulta of consultas(); track consulta.fecha) {
+            <div class="bg-surface-2 border border-[var(--border)] rounded-md px-4 py-3">
+              <div class="flex items-start justify-between gap-3 mb-1.5">
+                <p class="text-[14px] font-bold text-text-primary">{{ consulta.asunto }}</p>
+                <span class="text-[11px] text-text-muted flex-shrink-0">{{ consulta.fecha }}</span>
+              </div>
+              <p class="text-[12px] text-text-secondary mb-2">{{ consulta.nombre }} · {{ consulta.email }}</p>
+              <p class="text-[13px] text-text-secondary leading-relaxed">{{ consulta.mensaje }}</p>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+
+  </div>
+</div>

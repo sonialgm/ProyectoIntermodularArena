@@ -1,0 +1,654 @@
+
+<!-- PÁGINA PRINCIPAL DEL PANEL ADMINISTRADOR -->
+<div
+  class="min-h-screen bg-bg px-6 py-8"
+  style="background-image: radial-gradient(ellipse 900px 500px at 50% -10%, rgba(232,88,26,0.06) 0%, transparent 65%)"
+>
+  <div class="max-w-[1400px] mx-auto">
+    <div class="mb-8">
+      <p class="text-[11px] uppercase tracking-[4px] font-bold text-brand mb-2">
+        Administración
+      </p>
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+        <div>
+          <h1 class="text-[34px] font-black tracking-tight text-text-primary leading-none mb-2">
+            Panel Administrador
+          </h1>
+          <p class="text-[14px] text-text-secondary">
+            Gestiona eventos, sectores y usuarios del sistema.
+          </p>
+        </div>
+
+        <!-- PESTAÑAS de navegación: Eventos / Estadio / Usuarios     -->
+        <div class="flex flex-wrap gap-2 bg-surface-2 border border-[var(--border)] rounded-2xl p-1.5">
+          <!-- Pestaña: Eventos -->
+          <button
+            (click)="onTabChange('eventos')"
+            class="px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200"
+            [class.bg-brand]="activeTab() === 'eventos'"
+            [class.text-white]="activeTab() === 'eventos'"
+            [class.shadow-brand]="activeTab() === 'eventos'"
+            [class.bg-transparent]="activeTab() !== 'eventos'"
+            [class.text-text-secondary]="activeTab() !== 'eventos'"
+          >
+            Eventos
+          </button>
+          <!-- Pestaña: Estadio -->
+          <button
+            (click)="onTabChange('estadio')"
+            class="px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200"
+            [class.bg-brand]="activeTab() === 'estadio'"
+            [class.text-white]="activeTab() === 'estadio'"
+            [class.shadow-brand]="activeTab() === 'estadio'"
+            [class.bg-transparent]="activeTab() !== 'estadio'"
+            [class.text-text-secondary]="activeTab() !== 'estadio'"
+          >
+            Estadio
+          </button>
+          <!-- Pestaña: Usuarios -->
+          <button
+            (click)="onTabChange('usuarios')"
+            class="px-5 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-200"
+            [class.bg-brand]="activeTab() === 'usuarios'"
+            [class.text-white]="activeTab() === 'usuarios'"
+            [class.shadow-brand]="activeTab() === 'usuarios'"
+            [class.bg-transparent]="activeTab() !== 'usuarios'"
+            [class.text-text-secondary]="activeTab() !== 'usuarios'"
+          >
+            Usuarios
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: EVENTOS                                             -->
+    @if (activeTab() === 'eventos') {
+      <div class="grid gap-6">
+        <!-- Botón para abrir el formulario de creación -->
+        <div>
+          <button
+            (click)="openCreateEvento()"
+            class="bg-brand hover:bg-brand/85 text-white px-5 py-3 rounded-xl transition-all duration-150 font-bold text-[13px] hover:-translate-y-px hover:shadow-brand"
+          >
+            ➕ Crear evento
+          </button>
+        </div>
+        <!-- Spinner de carga mientras se obtienen los eventos -->
+        @if (loading()) {
+          <div class="flex flex-col items-center justify-center py-16 gap-3 text-text-secondary text-[14px]">
+            <div class="w-8 h-8 rounded-full border-[2.5px] border-border-md border-t-brand animate-spin"></div>
+            <span>Cargando datos...</span>
+          </div>
+        }
+
+        <!-- FORMULARIO: Crear nuevo evento                           -->
+        <!-- Solo visible cuando creatingEvento() === true            -->
+        @if (creatingEvento()) {
+          <div class="bg-surface-1 border border-border-md rounded-3xl p-7 shadow-md">
+            <h2 class="text-[24px] font-black tracking-tight text-text-primary mb-6">
+              Crear nuevo evento
+            </h2>
+            <!-- Errores de validación del formulario de creación -->
+            @if (createErrors().length > 0) {
+              <div class="mb-5 bg-error/10 border border-error/20 rounded-2xl p-4">
+                <ul class="space-y-1">
+                  @for (err of createErrors(); track err) {
+                    <li class="text-[13px] text-error font-medium">• {{ err }}</li>
+                  }
+                </ul>
+              </div>
+            }
+            <!-- Errores genéricos de evento (compartidos con edición) -->
+            @if (eventoErrors().length > 0) {
+              <div class="mb-5 bg-error/10 border border-error/20 rounded-2xl p-4">
+                <ul class="space-y-1">
+                  @for (err of eventoErrors(); track err) {
+                    <li class="text-[13px] text-error font-medium">• {{ err }}</li>
+                  }
+                </ul>
+              </div>
+            }
+            <!-- Campos del formulario de creación -->
+            <div class="space-y-4">
+              <input
+                [(ngModel)]="form.nombre"
+                placeholder="Nombre"
+                class="w-full bg-surface-2 border border-[var(--border)] focus:border-brand outline-none px-4 py-3 rounded-xl text-[14px]"
+              >
+              <input
+                [(ngModel)]="form.descripcion_corta"
+                placeholder="Descripción corta"
+                class="w-full bg-surface-2 border border-[var(--border)] focus:border-brand outline-none px-4 py-3 rounded-xl text-[14px]"
+              >
+              <textarea
+                [(ngModel)]="form.descripcion_larga"
+                placeholder="Descripción larga"
+                class="w-full min-h-[120px] bg-surface-2 border border-[var(--border)] focus:border-brand outline-none px-4 py-3 rounded-xl text-[14px]"
+              ></textarea>
+              <input
+                [(ngModel)]="form.poster_url"
+                placeholder="URL del poster"
+                class="w-full bg-surface-2 border border-[var(--border)] focus:border-brand outline-none px-4 py-3 rounded-xl text-[14px]"
+              >
+              <!-- Fecha y hora en fila (columna en móvil) -->
+              <div class="flex flex-col md:flex-row gap-4">
+                <input
+                  type="date"
+                  [(ngModel)]="form.fecha"
+                  class="bg-surface-2 border border-[var(--border)] focus:border-brand outline-none px-4 py-3 rounded-xl text-[14px]"
+                >
+                <input
+                  type="time"
+                  [(ngModel)]="form.hora"
+                  class="bg-surface-2 border border-[var(--border)] focus:border-brand outline-none px-4 py-3 rounded-xl text-[14px]"
+                >
+              </div>
+              <!-- Botones: confirmar creación / cancelar -->
+              <div class="flex gap-3 pt-2">
+                <button
+                  (click)="createEvento()"
+                  [disabled]="creatingEv()"
+                  class="bg-brand hover:bg-brand/85 disabled:opacity-50 text-white px-5 py-3 rounded-xl transition-all duration-150 font-bold text-[13px]"
+                >
+                  @if (creatingEv()) { Creando... } @else { Crear evento }
+                </button>
+                <button
+                  (click)="cancelCreateEvento()"
+                  class="bg-surface-3 hover:bg-surface-2 border border-[var(--border)] text-text-secondary px-5 py-3 rounded-xl transition-all duration-150 font-semibold text-[13px]"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+        <!-- LISTA DE EVENTOS                                         -->
+        @for (evento of eventos(); track evento.id) {
+          <div class="bg-surface-1 border border-border-md rounded-3xl overflow-hidden shadow-md">
+            <div class="grid xl:grid-cols-[320px_1fr]">
+              <!-- Poster del evento -->
+              <div class="bg-surface-3 h-[220px] overflow-hidden rounded-t-3xl">
+                <img
+                  [src]="getPoster(evento)"
+                  class="w-full h-full object-cover transition-transform hover:scale-105"
+                >
+              </div>
+              <!-- Contenido principal de la tarjeta -->
+              <div class="p-7">
+                <!-- MODO VISUALIZACIÓN (no está en edición)          -->
+                @if (editingId() !== evento.id) {
+                  <div class="flex flex-col h-full">
+                    <!-- Datos del evento -->
+                    <div class="mb-6">
+                      <p class="text-[11px] uppercase tracking-[3px] font-bold text-brand mb-2">Evento</p>
+                      <h2 class="text-[30px] font-black tracking-tight text-text-primary mb-3">
+                        {{ evento.nombre }}
+                      </h2>
+                      <p class="text-[14px] text-text-secondary leading-relaxed mb-5">
+                        {{ evento.descripcion_corta }}
+                      </p>
+                      <!-- Fecha y hora del evento -->
+                      <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-2 text-[13px] text-text-secondary">
+                          <div class="w-7 h-7 rounded-md bg-surface-3 flex items-center justify-center">📅</div>
+                          <span>{{ evento.fecha }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[13px] text-text-secondary">
+                          <div class="w-7 h-7 rounded-md bg-surface-3 flex items-center justify-center">🕒</div>
+                          <span>{{ evento.hora }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Acciones: editar, eliminar, toggle sectores -->
+                    <div class="flex flex-wrap gap-2 mt-auto">
+                      <button
+                        (click)="edit(evento)"
+                        class="bg-brand hover:bg-brand/85 text-white px-4 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-150"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        (click)="openDeleteModal(evento)"
+                        class="bg-error hover:bg-error/85 text-white px-4 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-150"
+                      >
+                        Eliminar
+                      </button>
+                      <button
+                        (click)="toggleSectores(evento.id)"
+                        class="bg-surface-3 hover:bg-surface-2 border border-[var(--border)] text-text-primary px-4 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-150"
+                      >
+                        {{ expandedEventoId() === evento.id ? 'Ocultar sectores' : 'Ver sectores' }}
+                      </button>
+                    </div>
+                    <!-- SECTORES DEL EVENTO (expandible)             -->
+                    <!-- Muestra precios agrupados por grupo de sector -->
+                    @if (expandedEventoId() === evento.id) {
+                      <div class="mt-6 border-t border-[var(--border)] pt-6">
+                        <h3 class="text-[14px] font-black tracking-tight text-text-primary mb-3">
+                          Sectores del evento
+                        </h3>
+                        <div class="flex flex-col gap-6">
+                          @for (grupo of groupPrecios(evento.precios); track grupo.grupo) {
+                            <div>
+                              <h3 class="text-[13px] font-black text-text-primary mb-2">
+                                {{ grupo.grupo }}
+                              </h3>
+                              <div class="flex flex-col gap-2">
+                                @for (precio of grupo.items; track precio.id) {
+                                  <div
+                                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-2 border border-[var(--border)] rounded-xl px-4 py-3"
+                                    [class.opacity-50]="!precio.sector.activo"
+                                  >
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                      <span
+                                        class="w-2 h-2 rounded-full flex-shrink-0"
+                                        [ngClass]="
+                                          precio.sector.activo && precio.disponible
+                                            ? 'bg-success'
+                                            : precio.sector.activo && !precio.disponible
+                                              ? 'bg-warning'
+                                              : 'bg-error'
+                                        "
+                                      ></span>
+                                      <p class="text-[13px] font-bold text-text-primary truncate">
+                                        {{ precio.sector.nombre }}
+                                      </p>
+                                      @if (!precio.sector.activo) {
+                                        <span class="text-[10px] text-error font-semibold bg-error/10 px-2 py-0.5 rounded-full flex-shrink-0">
+                                          Desactivado
+                                        </span>
+                                      } @else if (!precio.disponible) {
+                                        <span class="text-[10px] text-warning font-semibold bg-warning/10 px-2 py-0.5 rounded-full flex-shrink-0">
+                                          Bloqueado
+                                        </span>
+                                      }
+                                    </div>
+                                    <!-- Acciones de precio y disponibilidad -->
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                      <input
+                                        type="number"
+                                        [(ngModel)]="precio.precio_raw"
+                                        [disabled]="!precio.sector.activo"
+                                        class="bg-surface-1 border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-right w-24 outline-none text-[13px] disabled:opacity-40"
+                                      />
+                                      <button
+                                        (click)="savePrecioSolo(precio)"
+                                        [disabled]="!precio.sector.activo || savingPrecioId() === precio.id"
+                                        class="bg-surface-3 hover:bg-surface-2 border border-[var(--border)] text-text-primary px-3 py-1.5 rounded-lg text-[11px] font-bold transition whitespace-nowrap"
+                                      >
+                                        {{ savingPrecioId() === precio.id ? '...' : '💾' }}
+                                      </button>
+                                      <!-- Botón: bloquear / desbloquear disponibilidad (solo si activo) -->
+                                      @if (precio.sector.activo) {
+                                        <button
+                                          (click)="saveDisponibilidad(precio)"
+                                          [disabled]="savingDisponibilidadId() === precio.id"
+                                          class="px-3 py-1.5 rounded-lg text-white text-[11px] font-bold transition disabled:opacity-50 whitespace-nowrap"
+                                          [class.bg-error]="precio.disponible"
+                                          [class.bg-success]="!precio.disponible"
+                                        >
+                                          {{ savingDisponibilidadId() === precio.id ? '...' : precio.disponible ? '🔒' : '🔓' }}
+                                        </button>
+                                      }
+                                    </div>
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+                <!-- MODO EDICIÓN del evento                          -->
+                @if (editingId() === evento.id) {
+                  <!-- Errores al guardar edición -->
+                  @if (eventoErrors().length > 0) {
+                    <div class="mb-5 bg-error/10 border border-error/20 rounded-2xl p-4">
+                      <ul class="space-y-1">
+                        @for (err of eventoErrors(); track err) {
+                          <li class="text-[13px] text-error font-medium">• {{ err }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                  <div class="space-y-4">
+                    <input
+                      [(ngModel)]="form.nombre"
+                      placeholder="Nombre"
+                      class="w-full bg-surface-2 border border-[var(--border)] rounded-xl px-4 py-3 outline-none"
+                    >
+                    <input
+                      [(ngModel)]="form.descripcion_corta"
+                      placeholder="Descripción corta"
+                      class="w-full bg-surface-2 border border-[var(--border)] rounded-xl px-4 py-3 outline-none"
+                    >
+                    <textarea
+                      [(ngModel)]="form.descripcion_larga"
+                      placeholder="Descripción larga"
+                      class="w-full min-h-[120px] bg-surface-2 border border-[var(--border)] rounded-xl px-4 py-3 outline-none"
+                    ></textarea>
+                    <input
+                      [(ngModel)]="form.poster_url"
+                      placeholder="URL del poster"
+                      class="w-full bg-surface-2 border border-[var(--border)] rounded-xl px-4 py-3 outline-none"
+                    >
+                    <div class="flex flex-col md:flex-row gap-4">
+                      <input
+                        type="date"
+                        [(ngModel)]="form.fecha"
+                        class="bg-surface-2 border border-[var(--border)] rounded-xl px-4 py-3 outline-none"
+                      >
+                      <input
+                        type="time"
+                        [(ngModel)]="form.hora"
+                        class="bg-surface-2 border border-[var(--border)] rounded-xl px-4 py-3 outline-none"
+                      >
+                    </div>
+                    <!-- Botones: guardar cambios / cancelar edición -->
+                    <div class="flex gap-3 pt-2">
+                      <button
+                        (click)="save(evento.id)"
+                        [disabled]="savingEvento()"
+                        class="bg-success disabled:opacity-50 text-white px-5 py-3 rounded-xl font-bold text-[13px]"
+                      >
+                        @if (savingEvento()) { Guardando... } @else { Guardar }
+                      </button>
+                      <button
+                        (click)="cancelEdit()"
+                        class="bg-surface-3 border border-[var(--border)] text-text-secondary px-5 py-3 rounded-xl font-semibold text-[13px]"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- SECCIÓN: ESTADIO                                             -->
+    <!-- Gestión global de sectores (activar / desactivar)           -->
+    @if (activeTab() === 'estadio') {
+      <div class="flex flex-col gap-8">
+        @for (grupo of sectoresAgrupados(); track grupo.grupo) {
+          <div>
+            <div class="flex items-center gap-2.5 mb-4">
+              <h3 class="text-[15px] font-black tracking-tight text-text-primary">
+                {{ grupo.grupo }}
+              </h3>
+              <span class="text-[11px] text-text-muted bg-surface-2 border border-[var(--border)] px-2.5 py-0.5 rounded-full font-semibold">
+                {{ grupo.items.length }} sectores
+              </span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+              @for (sector of grupo.items; track sector.id) {
+                <div class="bg-surface-1 border border-border-md rounded-xl p-4 flex flex-col gap-3">
+                  <!-- Nombre del sector + indicador de estado -->
+                  <div class="flex items-start justify-between gap-1">
+                    <p class="text-[13px] font-black text-text-primary leading-tight">
+                      {{ sector.nombre }}
+                    </p>
+                    <!-- Punto verde = activo, rojo = inactivo -->
+                    <span
+                      class="w-2 h-2 rounded-full flex-shrink-0 mt-1"
+                      [ngClass]="sector.activo ? 'bg-success' : 'bg-error'"
+                    ></span>
+                  </div>
+                  <!-- Botón para activar / desactivar el sector globalmente -->
+                  <button
+                    (click)="toggleSectorGlobal(sector)"
+                    [disabled]="togglingSectorId() === sector.id"
+                    class="w-full py-1.5 rounded-lg text-white transition-all duration-150 disabled:opacity-50 text-[11px] font-bold"
+                    [class.bg-error]="sector.activo"
+                    [class.bg-success]="!sector.activo"
+                  >
+                    @if (togglingSectorId() === sector.id) {
+                      ...
+                    } @else {
+                      {{ sector.activo ? '🔒 Desactivar' : '🔓 Activar' }}
+                    }
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- SECCIÓN: USUARIOS                                            -->
+    <!-- Lista paginada de usuarios con detalle expandible           -->
+    @if (activeTab() === 'usuarios') {
+      @if (loadingUsuarios()) {
+        <div class="flex flex-col items-center justify-center py-16 gap-3 text-text-secondary text-[14px]">
+          <div class="w-8 h-8 rounded-full border-[2.5px] border-border-md border-t-brand animate-spin"></div>
+          <span>Cargando usuarios...</span>
+        </div>
+      }
+      <!-- PAGINACIÓN                                               -->
+      <!-- Botones anterior / páginas numeradas / siguiente         -->
+      <div class="flex items-center justify-center gap-2 mt-6">
+        <!-- Botón: página anterior -->
+        <button
+          (click)="prevPage()"
+          class="px-3 py-1 bg-surface-3 rounded-lg text-text-secondary"
+        >
+          ←
+        </button>
+        <!-- Botones numéricos de página -->
+        @for (page of [].constructor(totalPages()); track i; let i = $index) {
+          <button
+            (click)="goToPage(i + 1)"
+            class="px-3 py-1 rounded-lg text-[13px]"
+            [class.bg-brand]="currentPage() === (i + 1)"
+            [class.text-white]="currentPage() === (i + 1)"
+            [class.bg-surface-3]="currentPage() !== (i + 1)"
+          >
+            {{ i + 1 }}
+          </button>
+        }
+        <!-- Botón: página siguiente -->
+        <button
+          (click)="nextPage()"
+          class="px-3 py-1 bg-surface-3 rounded-lg text-text-secondary"
+        >
+          →
+        </button>
+      </div>
+
+      <!-- LISTA DE USUARIOS PAGINADOS                              -->
+      <div class="grid gap-4">
+        @for (usuario of usuariosPaginados(); track usuario.id) {
+          <div class="bg-surface-1 border border-border-md rounded-3xl overflow-hidden shadow-md">
+            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 p-6">
+              <div class="flex items-start gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-brand/10 text-brand flex items-center justify-center font-black text-[18px] flex-shrink-0">
+                  {{ usuario.nombre.charAt(0) }}{{ usuario.apellido.charAt(0) }}
+                </div>
+                <div>
+                  <!-- MODO VISUALIZACIÓN del usuario                 -->
+                  @if (editingUsuarioId() !== usuario.id) {
+                   <p class="font-black text-[20px] text-text-primary">
+                      {{ usuario.nombre }} {{ usuario.apellido }}
+                    </p>
+                    <p class="text-[13px] text-text-secondary mb-3">
+                      {{ usuario.email }}
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                      @if (usuario.is_admin) {
+                        <span class="text-[11px] bg-brand/10 text-brand px-3 py-1 rounded-full font-bold">
+                          Admin
+                        </span>
+                      }
+                      <!-- Cantidad de entradas compradas -->
+                      <span class="text-[11px] bg-surface-3 text-text-secondary px-3 py-1 rounded-full font-semibold">
+                        🎫 {{ usuario.entradas_count }} entrada/s
+                      </span>
+                      <!-- Cantidad de reservas activas -->
+                      <span class="text-[11px] bg-warning/10 text-warning px-3 py-1 rounded-full font-semibold">
+                        ⏳ {{ usuario.reservas_count }} reserva/s
+                      </span>
+                      <!-- Fecha de registro -->
+                      <span class="text-[11px] bg-surface-3 text-text-muted px-3 py-1 rounded-full font-semibold">
+                        Desde {{ usuario.created_at }}
+                      </span>
+                    </div>
+                  }
+                  <!-- MODO EDICIÓN del usuario                       -->
+                  @if (editingUsuarioId() === usuario.id) {
+                    @if (userErrors().length > 0) {
+                      <div class="mb-3 bg-error/10 border border-error/20 rounded-xl p-3">
+                        <ul class="space-y-1">
+                          @for (err of userErrors(); track err) {
+                            <li class="text-[12px] text-error font-medium">• {{ err }}</li>
+                          }
+                        </ul>
+                      </div>
+                    }
+                    <!-- Campos de edición del usuario -->
+                    <div class="flex flex-col gap-3">
+                      <div class="flex gap-2">
+                        <input
+                          [(ngModel)]="userForm.nombre"
+                          placeholder="Nombre"
+                          class="bg-surface-2 border border-[var(--border)] rounded-xl px-3 py-2 text-[13px] outline-none w-36"
+                        />
+                        <input
+                          [(ngModel)]="userForm.apellido"
+                          placeholder="Apellido"
+                          class="bg-surface-2 border border-[var(--border)] rounded-xl px-3 py-2 text-[13px] outline-none w-36"
+                        />
+                      </div>
+                      <input
+                        [(ngModel)]="userForm.email"
+                        placeholder="Email"
+                        class="bg-surface-2 border border-[var(--border)] rounded-xl px-3 py-2 text-[13px] outline-none w-full md:w-[320px]"
+                      />
+                      <div class="flex gap-2">
+                        <button
+                          (click)="saveUsuario(usuario.id)"
+                          [disabled]="savingUsuario()"
+                          class="bg-success disabled:opacity-50 text-white px-4 py-2 rounded-xl text-[12px] font-bold"
+                        >
+                          @if (!savingUsuario()) { Guardar } @else { Guardando... }
+                        </button>
+                        <button
+                          (click)="cancelEditUsuario()"
+                          class="bg-surface-3 border border-[var(--border)] text-text-secondary px-4 py-2 rounded-xl text-[12px] font-semibold"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="flex gap-2">
+                @if (editingUsuarioId() !== usuario.id) {
+                  <!-- Abrir modo edición -->
+                  <button
+                    (click)="editUsuario(usuario)"
+                    class="bg-brand hover:bg-brand/85 text-white px-4 py-2 rounded-xl text-[12px] font-bold transition-all duration-150"
+                  >
+                    Editar
+                  </button>
+                  <!-- Mostrar / ocultar detalle de entradas y reservas -->
+                  <button
+                    (click)="selectUsuario(usuario)"
+                    class="bg-surface-3 hover:bg-surface-2 border border-[var(--border)] text-text-primary px-4 py-2 rounded-xl text-[12px] font-bold transition-all duration-150"
+                  >
+                    {{ selectedUsuario()?.id === usuario.id ? 'Ocultar detalle' : 'Ver detalle' }}
+                  </button>
+                }
+              </div>
+            </div>
+            <!-- DETALLE DEL USUARIO: entradas y reservas activas     -->
+            <!-- Solo visible si este usuario está seleccionado        -->
+            @if (selectedUsuario()?.id === usuario.id) {
+              <div class="border-t border-[var(--border)] px-6 py-6 bg-surface-2">
+                <div class="grid xl:grid-cols-2 gap-6">
+                  <!-- Entradas compradas -->
+                  <div>
+                    <h4 class="font-black text-[15px] text-text-primary mb-4">🎫 Entradas compradas</h4>
+                    @if (selectedUsuario().entradas.length === 0) {
+                      <p class="text-[13px] text-text-muted">Sin entradas</p>
+                    }
+                    <div class="space-y-3">
+                      @for (entrada of selectedUsuario().entradas; track entrada.id) {
+                        <div class="bg-surface-1 border border-[var(--border)] rounded-2xl px-4 py-3 text-[13px]">
+                          <p class="font-bold text-text-primary">{{ entrada.evento.nombre }}</p>
+                          <p class="text-text-secondary mt-1">
+                            📅 {{ entrada.evento.fecha }} · Comprada el {{ entrada.created_at }}
+                          </p>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <!-- Reservas activas -->
+                  <div>
+                    <h4 class="font-black text-[15px] text-text-primary mb-4">⏳ Reservas activas</h4>
+                    @if (selectedUsuario().reservas_activas.length === 0) {
+                      <p class="text-[13px] text-text-muted">Sin reservas activas</p>
+                    }
+                    <div class="space-y-3">
+                      @for (reserva of selectedUsuario().reservas_activas; track reserva.id) {
+                        <div class="bg-surface-1 border border-[var(--border)] rounded-2xl px-4 py-3 text-[13px]">
+                          <p class="font-bold text-text-primary">{{ reserva.evento.nombre }}</p>
+                          <p class="text-text-secondary mt-1">
+                            {{ reserva.asiento.sector }} ·
+                            <!-- La fila es opcional; solo se muestra si existe -->
+                            @if (reserva.asiento.fila) { Fila {{ reserva.asiento.fila }} · }
+                            Asiento {{ reserva.asiento.numero }}
+                          </p>
+                          <!-- Hora de expiración de la reserva, formateada con zona horaria -->
+                          <p class="text-warning text-[12px] mt-2 font-semibold">
+                            ⏰ Expira a las {{ zonaHoraria(reserva.reservado_hasta) }}
+                          </p>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- MODAL: Confirmar eliminación de evento                           -->
+@if (deleteModal()) {
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-[6px] flex items-center justify-center z-50 p-5">
+    <div class="bg-surface-1 border border-border-md p-7 rounded-3xl shadow-lg w-full max-w-md">
+      <h2 class="text-[24px] font-black tracking-tight text-text-primary mb-3">
+        Eliminar evento
+      </h2>
+      <p class="text-[14px] text-text-secondary mb-6">
+        ¿Seguro que quieres eliminar
+        <strong class="text-text-primary">{{ eventoAEliminar()?.nombre }}</strong>?
+      </p>
+      <div class="flex gap-3">
+        <button
+          (click)="closeDeleteModal()"
+          class="flex-1 bg-surface-3 border border-[var(--border)] text-text-secondary px-4 py-3 rounded-xl font-semibold text-[13px]"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="confirmDelete()"
+          [disabled]="deletingEvento()"
+          class="flex-1 bg-error disabled:opacity-50 text-white px-4 py-3 rounded-xl font-bold text-[13px]"
+        >
+          @if (deletingEvento()) { Eliminando... } @else { Eliminar }
+        </button>
+      </div>
+    </div>
+  </div>
+}

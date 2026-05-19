@@ -1,0 +1,64 @@
+services:
+
+  # ── Laravel (Sail) ─────────────────────────────────────────────
+  laravel.test:
+    build:
+      context: './arena2/vendor/laravel/sail/runtimes/8.5'
+      dockerfile: Dockerfile
+      args:
+        WWWGROUP: '${WWWGROUP}'
+    image: 'sail-8.5/app'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      WWWUSER: '${WWWUSER}'
+      LARAVEL_SAIL: 1
+      XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+      XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+      IGNITION_LOCAL_SITES_PATH: '${PWD}'
+    volumes:
+      - './arena2:/var/www/html'
+    networks:
+      - sail
+
+  # ── Angular (ng serve) ─────────────────────────────────────────
+  frontend:
+    build:
+      context: './front-arena'
+      dockerfile: Dockerfile
+    container_name: angular_app
+
+    ports:
+      - "4200:4200"
+
+    volumes:
+      - './front-arena:/app'
+      - '/app/node_modules'
+
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+    networks:
+      - sail
+
+  # ── Nginx (proxy inverso) ──────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - './nginx:/etc/nginx/conf.d:ro'
+    networks:
+      - sail
+    depends_on:
+      - laravel.test
+      - frontend
+
+networks:
+  sail:
+    driver: bridge
+
+volumes:
+  sail-mysql:
+    driver: local

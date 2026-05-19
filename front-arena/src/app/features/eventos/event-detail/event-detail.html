@@ -1,0 +1,211 @@
+<div class="min-h-screen bg-bg px-6 py-8"
+     style="background-image: radial-gradient(ellipse 800px 500px at 50% -5%, rgba(232,88,26,0.05) 0%, transparent 60%)">
+  <div class="max-w-[1100px] mx-auto">
+
+    <!-- LOADING -->
+    @if (loading()) {
+      <div class="flex flex-col items-center justify-center py-16 gap-3.5 text-text-secondary text-[14px]">
+        <div class="w-8 h-8 rounded-full border-[2.5px] border-border-md border-t-brand animate-spin"></div>
+        <span>Cargando datos...</span>
+      </div>
+    }
+
+    @if (!loading()) {
+
+      <!-- TOAST RESERVA ACTIVA -->
+      @if (showActiveCartToast()) {
+        <div class="fixed top-[72px] right-5 z-[200] bg-surface-2 border border-warning/35 rounded-xl shadow-md px-[18px] py-4 max-w-[340px] flex flex-col gap-3"
+             style="animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+          <div class="flex items-start gap-3">
+            <div class="w-[38px] h-[38px] rounded-md bg-warning/10 flex items-center justify-center text-lg flex-shrink-0">
+              ⚠️
+            </div>
+            <div>
+              <p class="text-[13px] font-bold text-text-primary mb-0.5">Tienes una reserva activa</p>
+              <p class="text-[12px] text-text-secondary leading-snug">
+                Confírmala antes de continuar.
+                Te quedan <span class="font-bold text-warning font-mono tracking-wider">{{ timerFormatted() }}</span>
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button (click)="goToCart()"
+              class="flex-1 bg-brand hover:bg-brand/85 text-white text-[12px] font-bold px-3 py-1.5 rounded-md transition-all duration-150">
+              Ir al carrito
+            </button>
+            <button (click)="dismissActiveCartToast()"
+              class="flex-1 bg-transparent hover:bg-surface-3 text-text-secondary border border-[var(--border)] hover:border-border-md text-[12px] font-bold px-3 py-1.5 rounded-md transition-all duration-150">
+              Descartar
+            </button>
+          </div>
+        </div>
+
+<!-- MAPA -->
+<div class="rounded-xl overflow-hidden border border-[var(--border)] mb-8" style="height: 220px;">
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3080.5!2d-0.3580!3d39.4530!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd604f4c4b72d0d1%3A0x1!2sRoig+Arena%2C+Calle+del+Bomber+Ram%C3%B3n+Duart%2C+12%2C+Valencia!5e0!3m2!1ses!2ses!4v1"
+    width="100%"
+    height="220"
+    style="border:0; display:block; filter: grayscale(30%) contrast(95%);"
+    allowfullscreen=""
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div>
+
+<!-- FOOTER  -->
+<div class="border-t border-[var(--border)] pt-5 pb-2 flex items-center justify-between">
+  <p class="text-[12px] text-text-muted">© 2025 Roig Arena · Valencia</p>
+  <p class="text-[12px] text-text-muted">roigarena&#64;contacto.com</p>
+</div>
+      }
+
+      <!-- CABECERA EVENTO -->
+      @if (evento(); as e) {
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-6 mb-8 items-start">
+
+          <div>
+            <p class="text-[11px] font-bold tracking-[3px] uppercase text-brand mb-2.5">Roig Arena · Valencia</p>
+            <h1 class="text-[30px] font-black tracking-tight leading-[1.1] mb-3 text-text-primary">
+              {{ e.nombre }}
+            </h1>
+            <p class="text-[14px] text-text-secondary leading-relaxed mb-5">
+              {{ e.descripcion_larga }}
+            </p>
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2.5 text-[13px] text-text-secondary">
+                <div class="w-7 h-7 bg-surface-3 rounded-md flex items-center justify-center text-[13px] flex-shrink-0">📅</div>
+                <span><strong class="text-text-primary">{{ e.fecha }}</strong></span>
+              </div>
+              <div class="flex items-center gap-2.5 text-[13px] text-text-secondary">
+                <div class="w-7 h-7 bg-surface-3 rounded-md flex items-center justify-center text-[13px] flex-shrink-0">🕒</div>
+                <span>Inicio <strong class="text-text-primary">{{ e.hora }}</strong></span>
+              </div>
+              <div class="flex items-center gap-2.5 text-[13px] text-text-secondary">
+                <div class="w-7 h-7 bg-surface-3 rounded-md flex items-center justify-center text-[13px] flex-shrink-0">📍</div>
+                <span><strong class="text-text-primary">Roig Arena</strong> · Valencia, España</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-surface-3 border border-[var(--border)] rounded-xl h-[260px] flex items-center justify-center text-[60px] overflow-hidden">
+            <img [src]="getPoster(e)"
+              alt="poster"
+              class="w-full h-full object-cover" alt="poster" class="w-full h-full object-cover" onerror="this.style.display='none'">
+          </div>
+
+        </div>
+      }
+
+      <div class="mb-4">
+        <h2 class="text-[18px] font-extrabold text-text-primary">
+          Selección de entradas
+        </h2>
+        <p class="text-[13px] text-text-secondary">
+          Elige tu ubicación en el recinto. Los asientos se reservan durante 15 minutos tras añadirlos al carrito.
+        </p>
+      </div>
+
+      <!-- MAPA ARENA -->
+      <app-arena-map
+        [sectores]="sectores()"
+        [asientosPorFila]="asientosPorFila()"
+        [filasOrdenadas]="filasOrdenadas()"
+        [selectedSeats]="selectedSeats()"
+        [selectedSeatIds]="selectedSeatIds()"
+        (sectorSelected)="onSelectSector($event)"
+        (seatSelected)="selectSeat($event)"
+        (seatRemoved)="removeSeatFromMap($event)"
+      />
+
+      <!-- RESUMEN SELECCIÓN -->
+      @if (selectedSeats().length > 0) {
+        <div class="mt-6 bg-surface-1 border border-border-md rounded-xl p-5">
+
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[13px] font-bold text-text-primary">Asientos seleccionados</span>
+            <span class="text-[18px] font-extrabold text-brand">{{ totalSeleccion().toFixed(2) }} €</span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 mb-3.5">
+            @for (seat of selectedSeats(); track seat.id) {
+              <span class="flex items-center gap-1.5 bg-surface-2 border border-border-md rounded-full px-2.5 py-1 text-[12px] font-semibold text-text-primary">
+                @if (seat.fila != null) { F{{ seat.fila }} · }
+                A{{ seat.numero }}
+                <span class="opacity-50 text-[11px]">({{ seat._sector }} · {{ seat._precio.toFixed(2) }}€)</span>
+                <button
+                  (click)="removeSeatFromMap(seat)"
+                  class="text-text-muted hover:text-error transition-colors leading-none text-[13px] ml-0.5"
+                  title="Quitar asiento">×</button>
+              </span>
+            }
+          </div>
+
+          <button
+            (click)="handleAddToCart()"
+            [disabled]="adding()"
+            class="w-full bg-brand hover:bg-brand/85 disabled:opacity-45 text-white text-[14px] font-bold px-6 py-3 rounded-md transition-all duration-150 hover:-translate-y-px hover:shadow-brand">
+            @if (adding()) {
+              Añadiendo...
+            } @else {
+              Añadir {{ selectedSeats().length }} asiento{{ selectedSeats().length > 1 ? 's' : '' }} al carrito
+            }
+          </button>
+
+        </div>
+      }
+
+      <!-- OVERLAY AÑADIENDO -->
+      @if (adding()) {
+        <div class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50">
+          <div class="bg-surface-1 border border-border-md rounded-2xl shadow-lg px-8 py-6 text-center">
+            <div class="w-8 h-8 rounded-full border-[2.5px] border-border-md border-t-brand animate-spin mx-auto mb-3"></div>
+            <p class="font-bold text-[15px] text-text-primary">Añadiendo al carrito...</p>
+            <p class="text-[13px] text-text-secondary mt-1">Reservando asientos</p>
+          </div>
+        </div>
+      }
+
+      <!-- MODAL CONFIRMAR -->
+      @if (showConfirmAdd()) {
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-[6px] flex items-center justify-center z-50 p-5"
+             style="animation: fadeIn 0.15s ease">
+          <div class="bg-surface-1 border border-border-md rounded-2xl shadow-lg p-7 w-full max-w-md"
+               style="animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1)">
+
+            <h2 class="text-[18px] font-extrabold text-text-primary mb-2.5">¿Añadir al carrito?</h2>
+            <p class="text-[13px] text-text-secondary mb-4">
+              Se reservarán los asientos durante 15 minutos.
+            </p>
+
+            <div class="bg-surface-2 rounded-xl p-3 mb-5 text-[13px] border border-[var(--border)]">
+              <p class="font-bold mb-2 text-text-primary">Resumen:</p>
+              @for (seat of selectedSeats(); track seat.id) {
+                <p class="text-text-secondary">
+                  🎫 Asiento {{ seat.numero }}
+                  @if (seat.fila != null) { (Fila {{ seat.fila }}) }
+                  · {{ seat._sector }} · {{ seat._precio.toFixed(2) }}€
+                </p>
+              }
+              <p class="mt-2 font-extrabold text-brand">Total: {{ totalSeleccion().toFixed(2) }} €</p>
+            </div>
+
+            <div class="flex gap-2.5">
+              <button (click)="closeConfirmAdd()"
+                class="flex-1 bg-transparent hover:bg-surface-3 text-text-secondary border border-[var(--border)] hover:border-border-md py-2.5 rounded-md transition-all duration-150 font-semibold text-[13px]">
+                Cancelar
+              </button>
+              <button (click)="confirmAddToCart()"
+                class="flex-1 bg-brand hover:bg-brand/85 text-white py-2.5 rounded-md transition-all duration-150 font-bold text-[13px] hover:-translate-y-px">
+                Confirmar
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+
+    }
+
+  </div>
+</div>

@@ -1,0 +1,86 @@
+<div class="min-h-screen flex items-center justify-center bg-bg px-6"
+     style="background-image: radial-gradient(ellipse 600px 400px at 50% -10%, rgba(232,88,26,0.08) 0%, transparent 70%)">
+
+  <div class="bg-surface-1 border border-border-md rounded-2xl p-9 w-full max-w-[420px] shadow-lg">
+
+    <h1 class="text-[22px] font-extrabold tracking-tight text-text-primary mb-1.5">Crear cuenta</h1>
+    <p class="text-[13px] text-text-secondary mb-6">Únete para comprar tus entradas</p>
+
+    <!-- ERRORES -->
+    @if (errors().length > 0) {
+      <div class="bg-error/10 border border-error/30 rounded-md px-3.5 py-3 mb-4 text-[13px] text-[#fca5a5]">
+        <ul class="list-disc pl-4">
+          @for (err of errors(); track err) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <!-- NOMBRE / APELLIDO -->
+    <div class="grid grid-cols-2 gap-3 mb-3">
+      <div>
+        <label class="block text-[11px] font-bold tracking-[0.5px] uppercase text-text-secondary mb-1.5">Nombre</label>
+        <input
+          placeholder="Sonia"
+          class="w-full bg-surface-2 border border-border-md rounded-md text-text-primary text-[14px] px-3.5 py-2.5 outline-none transition-all duration-150 placeholder:text-text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_var(--brand-dim)]"
+          (input)="nombre.set($any($event.target).value)"
+        />
+      </div>
+      <div>
+        <label class="block text-[11px] font-bold tracking-[0.5px] uppercase text-text-secondary mb-1.5">Apellido</label>
+        <input
+          placeholder="Luján"
+          class="w-full bg-surface-2 border border-border-md rounded-md text-text-primary text-[14px] px-3.5 py-2.5 outline-none transition-all duration-150 placeholder:text-text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_var(--brand-dim)]"
+          (input)="apellido.set($any($event.target).value)"
+        />
+      </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="mb-3">
+      <label class="block text-[11px] font-bold tracking-[0.5px] uppercase text-text-secondary mb-1.5">Email</label>
+      <input
+        type="email"
+        placeholder="nombre@email.com"
+        class="w-full bg-surface-2 border border-border-md rounded-md text-text-primary text-[14px] px-3.5 py-2.5 outline-none transition-all duration-150 placeholder:text-text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_var(--brand-dim)]"
+        (input)="email.set($any($event.target).value)"
+      />
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="mb-3">
+      <label class="block text-[11px] font-bold tracking-[0.5px] uppercase text-text-secondary mb-1.5">Contraseña</label>
+      <input
+        type="password"
+        placeholder="••••••••"
+        class="w-full bg-surface-2 border border-border-md rounded-md text-text-primary text-[14px] px-3.5 py-2.5 outline-none transition-all duration-150 placeholder:text-text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_var(--brand-dim)]"
+        (input)="password.set($any($event.target).value)"
+      />
+    </div>
+
+    <!-- REPEAT PASSWORD -->
+    <div class="mb-5">
+      <label class="block text-[11px] font-bold tracking-[0.5px] uppercase text-text-secondary mb-1.5">Repetir contraseña</label>
+      <input
+        type="password"
+        placeholder="••••••••"
+        class="w-full bg-surface-2 border border-border-md rounded-md text-text-primary text-[14px] px-3.5 py-2.5 outline-none transition-all duration-150 placeholder:text-text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_var(--brand-dim)]"
+        (input)="password2.set($any($event.target).value)"
+      />
+    </div>
+
+    <button
+      (click)="register()"
+      [disabled]="loading()"
+      class="w-full bg-brand hover:bg-[#cf4d16] disabled:opacity-45 text-white text-[14px] font-bold py-3 rounded-md transition-all duration-150 hover:-translate-y-px hover:shadow-brand">
+      @if (loading()) { Registrando... } @else { Crear cuenta }
+    </button>
+
+    <p class="text-[13px] text-text-secondary text-center mt-5">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login" class="text-brand font-semibold hover:underline">Inicia sesión</a>
+    </p>
+
+  </div>
+</div>

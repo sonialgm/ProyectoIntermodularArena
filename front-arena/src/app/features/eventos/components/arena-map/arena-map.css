@@ -1,0 +1,268 @@
+
+.arena-wrapper {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ============================= */
+/* SVG                           */
+/* ============================= */
+.arena-svg-container { width: 100%; }
+
+.arena-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.6);
+}
+
+/* ============================= */
+/* SECTORES                      */
+/* ============================= */
+.sector-group { cursor: pointer; }
+
+.sector-group:hover .sector-path {
+  filter: brightness(1.4) saturate(1.1);
+}
+
+.sector-group.sector-disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.sector-group.sector-selected .sector-path {
+  filter: brightness(1.5) drop-shadow(0 0 5px rgba(255,255,255,0.45));
+  stroke-width: 2 !important;
+}
+
+.sector-path { transition: filter 0.15s ease; }
+
+/* ============================= */
+/* LABELS                        */
+/* ============================= */
+.sector-label-xs {
+  font-size: 7px;
+  fill: rgba(255,255,255,0.74);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.sector-label-sm {
+  font-size: 8.5px;
+  fill: rgba(255,255,255,0.88);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.sector-label-lg {
+  font-size: 16px;
+  fill: rgba(255,255,255,0.95);
+  font-weight: 800;
+  pointer-events: none;
+  letter-spacing: 1.5px;
+}
+
+.sector-price {
+  font-size: 7.5px;
+  fill: rgba(255,255,255,0.42);
+  pointer-events: none;
+}
+
+.sector-price-lg {
+  font-size: 11px;
+  fill: rgba(255,255,255,0.6);
+  pointer-events: none;
+}
+
+.stage-label {
+  font-size: 12px;
+  fill: rgba(255,255,255,0.82);
+  font-weight: 800;
+  pointer-events: none;
+  letter-spacing: 3px;
+}
+
+.stage-sublabel {
+  font-size: 7.5px;
+  fill: rgba(255,215,60,0.5);
+  pointer-events: none;
+  letter-spacing: 1.5px;
+}
+
+/* ============================= */
+/* LEYENDA                       */
+/* ============================= */
+.arena-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 14px;
+  padding: 0 4px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: #888;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ============================= */
+/* MODAL ASIENTOS                */
+/* ============================= */
+.seats-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.2s ease;
+}
+
+.seats-panel {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+  animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.seats-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.seats-panel-title { font-size: 20px; font-weight: 800; color: #111; letter-spacing: -0.3px; }
+.seats-panel-sub   { font-size: 13px; color: #888; margin-top: 3px; }
+.selected-count    { color: #E8581A; font-weight: 600; }
+
+.close-btn {
+  background: #f0f0f0;
+  border: none;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #555; flex-shrink: 0;
+  transition: background 0.15s;
+}
+.close-btn:hover { background: #e0e0e0; }
+
+.seats-panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+
+.seats-panel-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 14px 24px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.selected-chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+
+.chip {
+  background: #fff3ed;
+  color: #E8581A;
+  border: 1px solid #f5c4a8;
+  padding: 4px 8px 4px 10px;
+  border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.chip-remove {
+  background: none; border: none; cursor: pointer;
+  color: #E8581A; font-size: 11px; padding: 0; line-height: 1;
+  opacity: 0.7; transition: opacity 0.1s;
+}
+.chip-remove:hover { opacity: 1; }
+
+.btn-done {
+  background: #E8581A; color: #fff; border: none;
+  padding: 10px 22px; border-radius: 12px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-done:hover { background: #cf4d16; transform: translateY(-1px); }
+
+/* ============================= */
+/* ANIMACIONES                   */
+/* ============================= */
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.seats-panel-body {
+  position: relative;
+}
+
+.seats-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(2px);
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seats-loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.seats-loading-box p {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid #e5e5e5;
+  border-top-color: #E8581A;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

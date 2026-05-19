@@ -1,0 +1,46 @@
+<div class="min-h-screen flex items-center justify-center bg-bg px-6"
+     style="background-image: radial-gradient(ellipse 600px 400px at 50% -10%, rgba(232,88,26,0.08) 0%, transparent 70%)">
+
+  <div class="bg-surface-1 border border-border-md rounded-2xl p-9 w-full max-w-[380px] shadow-lg">
+
+    <h1 class="text-[22px] font-extrabold tracking-tight text-text-primary mb-1.5">Bienvenido/a de vuelta</h1>
+    <p class="text-[13px] text-text-secondary mb-6">Inicia sesión para gestionar tus entradas</p>
+
+    <!-- EMAIL -->
+    <div class="mb-3">
+      <label class="block text-[11px] font-bold tracking-[0.5px] uppercase text-text-secondary mb-1.5">Email</label>
+      <input
+        type="email"
+        placeholder="nombre@email.com"
+        class="w-full bg-surface-2 border border-border-md rounded-md text-text-primary text-[14px] px-3.5 py-2.5 outline-none transition-all duration-150 placeholder:text-text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_var(--brand-dim)]"
+        [value]="email()"
+        (input)="email.set($any($event.target).value)"
+      />
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="mb-5">
+      <label class="block text-[11px] font-bold tracking-[0.5px] uppercase text-text-secondary mb-1.5">Contraseña</label>
+      <input
+        type="password"
+        placeholder="••••••••"
+        class="w-full bg-surface-2 border border-border-md rounded-md text-text-primary text-[14px] px-3.5 py-2.5 outline-none transition-all duration-150 placeholder:text-text-muted/70 focus:border-brand focus:shadow-[0_0_0_3px_var(--brand-dim)]"
+        [value]="password()"
+        (input)="password.set($any($event.target).value)"
+      />
+    </div>
+
+    <button
+      (click)="submit()"
+      [disabled]="loading()"
+      class="w-full bg-brand hover:bg-[#cf4d16] disabled:opacity-45 text-white text-[14px] font-bold py-3 rounded-md transition-all duration-150 hover:-translate-y-px hover:shadow-brand">
+      @if (!loading()) { Entrar } @else { Cargando... }
+    </button>
+
+    <p class="text-[13px] text-text-secondary text-center mt-5">
+      ¿No tienes cuenta?
+      <a routerLink="/register" class="text-brand font-semibold hover:underline">Regístrate</a>
+    </p>
+
+  </div>
+</div>

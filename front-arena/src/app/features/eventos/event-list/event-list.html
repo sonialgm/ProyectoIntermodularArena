@@ -1,0 +1,114 @@
+<div class="min-h-screen bg-bg px-6 py-8"
+     style="background-image: radial-gradient(ellipse 800px 500px at 50% -5%, rgba(232,88,26,0.05) 0%, transparent 60%)">
+  <div class="max-w-[1100px] mx-auto">
+
+    <!-- LOADING -->
+    @if (loading()) {
+      <div class="flex flex-col items-center justify-center py-16 gap-3.5 text-text-secondary text-[14px]">
+        <div class="w-8 h-8 rounded-full border-[2.5px] border-border-md border-t-brand animate-spin"></div>
+        <span>Cargando eventos...</span>
+      </div>
+    }
+
+    @if (!loading()) {
+
+      <!-- PAGE HEADER -->
+      <div class="mb-8">
+        <p class="text-[11px] font-bold tracking-[3px] uppercase text-brand mb-2">Programación</p>
+        <h1 class="text-[28px] font-extrabold tracking-tight mb-1.5 text-text-primary">Próximos eventos</h1>
+        <p class="text-[14px] text-text-secondary">Descubre los mejores conciertos, espectáculos y eventos deportivos en directo.</p>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="flex flex-col md:flex-row gap-3 mb-6">
+
+        <input
+          type="text"
+          placeholder="Buscar evento..."
+          [value]="searchText()"
+          (input)="searchText.set($any($event.target).value)"
+          class="w-full md:w-[320px] bg-surface-1 border border-[var(--border)] rounded-xl px-4 py-3 text-[14px] outline-none"
+        />
+
+        <input
+          type="date"
+          [value]="searchDate()"
+          (input)="searchDate.set($any($event.target).value)"
+          class="w-full md:w-[200px] bg-surface-1 border border-[var(--border)] rounded-xl px-4 py-3 text-[14px] outline-none"
+        />
+
+        <button
+          (click)="clearFilters()"
+          class="text-[12px] text-text-secondary underline md:self-center"
+        >
+          Limpiar filtros
+        </button>
+
+      </div>
+
+      <!-- MENSAJE -->
+      @if (eventosFiltrados.length === 0) {
+        <div class="text-center py-6 text-text-secondary text-[14px]">
+          No se encontraron eventos con esos filtros.
+        </div>
+      }
+
+      <!-- GRID -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        @for (evento of eventosFiltrados; track evento.id) {
+          <div
+            class="bg-surface-1 border border-[var(--border)] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:-translate-y-[3px] hover:border-border-md hover:shadow-md"
+            (click)="verDetalle(evento.id)"
+          >
+            <img
+              [src]="getPoster(evento)"
+              alt="poster"
+              class="w-full h-[180px] object-cover block"
+            />
+
+            <div class="px-[18px] pt-4 pb-[18px]">
+              <p class="text-[11px] font-semibold text-brand uppercase tracking-[1px] mb-1.5">
+                Entradas disponibles
+              </p>
+              <h2 class="text-[17px] font-extrabold tracking-tight mb-1.5 text-text-primary">
+                {{ evento.nombre }}
+              </h2>
+              <p class="text-[13px] text-text-secondary leading-relaxed mb-3.5 line-clamp-2">
+                {{ evento.descripcion_corta }}
+              </p>
+              <div class="flex items-center justify-between pt-3 border-t border-[var(--border)]">
+                <span class="text-[12px] text-text-secondary flex items-center gap-1.5">
+                  📅 {{ evento.fecha }} · {{ evento.hora }}
+                </span>
+                <span class="text-[12px] font-bold text-brand flex items-center gap-1">
+                  Ver →
+                </span>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+
+      
+        <!-- SOBRE NOSOTROS / INFO -->
+        <div class="mt-16 mb-8 grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          <!-- QUIÉNES SOMOS -->
+          <div class="bg-surface-1 border border-[var(--border)] rounded-xl px-6 py-5 md:col-span-2">
+            <p class="text-[11px] font-bold tracking-[3px] uppercase text-brand mb-3">El recinto</p>
+            <h2 class="text-[18px] font-extrabold tracking-tight text-text-primary mb-2">Roig Arena Valencia</h2>
+            <p class="text-[13px] text-text-secondary leading-relaxed">
+              El Roig Arena es el pabellón multiusos de referencia en Valencia, inaugurado en septiembre de 2025.
+              Diseñado para albergar los mejores eventos deportivos, conciertos y actividades culturales,
+              se ha convertido en el epicentro del entretenimiento en la ciudad, con una ubicación privilegiada
+              junto a la Ciudad de las Artes y las Ciencias.
+            </p>
+          </div>
+
+        </div>
+
+    }
+
+  </div>
+</div>

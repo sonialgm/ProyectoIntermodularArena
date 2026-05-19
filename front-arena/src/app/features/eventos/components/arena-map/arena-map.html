@@ -1,0 +1,336 @@
+<div class="arena-wrapper">
+  <div class="arena-svg-container">
+    <svg viewBox="0 0 950 750" xmlns="http://www.w3.org/2000/svg" class="arena-svg">
+      
+      <defs>
+        <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="#1c2035"/>
+          <stop offset="100%" stop-color="#0c0d14"/>
+        </radialGradient>
+        <linearGradient id="stageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#282c3e"/>
+          <stop offset="100%" stop-color="#181a26"/>
+        </linearGradient>
+        <filter id="stageGlow">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <rect width="950" height="800" fill="url(#bgGrad)"/>
+      <g transform="translate(45, -10)"> 
+      <!-- ============================================================ -->
+      <!-- ANILLO 301-323 (exterior)                                    -->
+      <!-- ============================================================ -->
+      @for (s of sectores301(); track s.id) {
+        <g
+          class="sector-group"
+          (click)="onSectorClick(s)"
+          [class.sector-selected]="selectedSector()?.id === s.id"
+          [class.sector-disabled]="!s.disponible"
+        >
+          <path
+            [attr.d]="s.path"
+            [attr.fill]="getSectorFill(s, '300')"
+            [attr.stroke]="selectedSector()?.id === s.id ? '#fff' : '#0c0d14'"
+            stroke-width="1.2"
+            class="sector-path"
+          />
+          <text
+            [attr.x]="s.labelX" [attr.y]="s.labelY"
+            text-anchor="middle" dominant-baseline="middle"
+            class="sector-label-xs"
+            [attr.transform]="'rotate(' + s.labelRotate + ',' + s.labelX + ',' + s.labelY + ')'"
+          >{{ s.shortName }}</text>
+        </g>
+      }
+
+      <!-- ============================================================ -->
+      <!-- ANILLO PALCOS                                                 -->
+      <!-- ============================================================ -->
+      @for (s of sectoresPalcos(); track s.id) {
+        <g
+          class="sector-group"
+          (click)="onSectorClick(s)"
+          [class.sector-selected]="selectedSector()?.id === s.id"
+          [class.sector-disabled]="!s.disponible"
+        >
+          <path
+            [attr.d]="s.path"
+            [attr.fill]="getSectorFill(s, 'palco')"
+            [attr.stroke]="selectedSector()?.id === s.id ? '#fff' : '#0c0d14'"
+            stroke-width="1.2"
+            class="sector-path"
+          />
+          <text
+            [attr.x]="s.labelX" [attr.y]="s.labelY"
+            text-anchor="middle" dominant-baseline="middle"
+            class="sector-label-xs"
+            [attr.transform]="'rotate(' + s.labelRotate + ',' + s.labelX + ',' + s.labelY + ')'"
+          >{{ s.shortName }}</text>
+        </g>
+      }
+
+      <!-- ============================================================ -->
+      <!-- ANILLO 101-122 (interior)                                    -->
+      <!-- ============================================================ -->
+      @for (s of sectores101(); track s.id) {
+        <g
+          class="sector-group"
+          (click)="onSectorClick(s)"
+          [class.sector-selected]="selectedSector()?.id === s.id"
+          [class.sector-disabled]="!s.disponible"
+        >
+          <path
+            [attr.d]="s.path"
+            [attr.fill]="getSectorFill(s, '100')"
+            [attr.stroke]="selectedSector()?.id === s.id ? '#fff' : '#0c0d14'"
+            stroke-width="1.2"
+            class="sector-path"
+          />
+          <text
+            [attr.x]="s.labelX" [attr.y]="s.labelY"
+            text-anchor="middle" dominant-baseline="middle"
+            class="sector-label-xs"
+            [attr.transform]="'rotate(' + s.labelRotate + ',' + s.labelX + ',' + s.labelY + ')'"
+          >{{ s.shortName }}</text>
+        </g>
+      }
+
+<!-- ============================================================ -->
+<!-- PISTA (izquierda grande)                                    -->
+<!-- ============================================================ -->
+@if (getSectorEspecial('PISTA'); as s) {
+  <g class="sector-group"
+     (click)="onSectorClick(s)"
+     [class.sector-selected]="selectedSector()?.id === s.id">
+
+    <!-- Base pista -->
+    <rect class="sector-path" x="250" y="280" width="245" height="200" rx="10"
+      [attr.fill]="getSectorFill(s, 'especial')"
+      [attr.stroke]="selectedSector()?.id === s.id ? '#fff' : 'rgba(255,255,255,0.07)'"
+      stroke-width="1.5"/>
+
+    <!-- ============================ -->
+    <!-- LÍNEAS TIPO BASKET -->
+    <!-- ============================ -->
+
+    <!-- línea horizontal central -->
+    <line x1="250" y1="380" x2="495" y2="380"
+      stroke="rgba(255,255,255,0.08)"
+      stroke-width="1"/>
+
+    <line x1="372.5" y1="280" x2="372.5" y2="480"
+      stroke="rgba(255,255,255,0.08)"
+      stroke-width="1"/>
+
+    <ellipse cx="372.5" cy="380" rx="28" ry="28"
+      fill="none"
+      stroke="rgba(255,255,255,0.08)"
+      stroke-width="1.2"/>
+
+    <line x1="280" y1="320" x2="470" y2="320"
+      stroke="rgba(255,255,255,0.05)"
+      stroke-width="1"/>
+
+    <line x1="280" y1="440" x2="470" y2="440"
+      stroke="rgba(255,255,255,0.05)"
+      stroke-width="1"/>
+
+    <text x="372.5" y="380"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      class="sector-label-lg">
+      PISTA
+    </text>
+
+  </g>
+}
+
+<!-- ============================================================ -->
+<!-- FRONT STAGE (columna vertical estrecha)                     -->
+<!-- ============================================================ -->
+@if (getSectorEspecial('FRONT STAGE'); as s) {
+  <g class="sector-group"
+     (click)="onSectorClick(s)"
+     [class.sector-selected]="selectedSector()?.id === s.id">
+
+    <!-- columna vertical pegada a pista -->
+    <rect class="sector-path" x="500" y="310" width="55" height="160" rx="8"
+      [attr.fill]="getSectorFill(s, 'especial')"
+      [attr.stroke]="selectedSector()?.id === s.id ? '#fff' : 'rgba(255,255,255,0.11)'"
+      stroke-width="1.5"/>
+
+    <text x="480" y="415"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      transform="rotate(-90 492 380)"
+      class="sector-label-sm">
+      FRONT STAGE
+    </text>
+  </g>
+}
+
+<!-- ============================================================ -->
+<!-- CLUB (arriba del FRONT STAGE)                               -->
+<!-- ============================================================ -->
+@if (getSectorEspecial('CLUB'); as s) {
+  <g class="sector-group"
+     (click)="onSectorClick(s)"
+     [class.sector-selected]="selectedSector()?.id === s.id">
+
+    <rect class="sector-path" x="500" y="250" width="50" height="50" rx="6"
+      [attr.fill]="getSectorFill(s, 'especial')"
+      [attr.stroke]="selectedSector()?.id === s.id ? '#fff' : 'rgba(255,255,255,0.09)'"
+      stroke-width="1.2"/>
+
+    <text x="525" y="280"
+      text-anchor="middle"
+      class="sector-label-xs">
+      CLUB
+    </text>
+  </g>
+}
+
+<!-- ============================================================ -->
+<!-- JOHNNIE WALKER (abajo del FRONT STAGE)                      -->
+<!-- ============================================================ -->
+@if (getSectorEspecial('JOHNNIE WALKER'); as s) {
+  <g class="sector-group"
+     (click)="onSectorClick(s)"
+     [class.sector-selected]="selectedSector()?.id === s.id">
+
+    <rect class="sector-path" x="500" y="480" width="50" height="50" rx="6"
+      [attr.fill]="getSectorFill(s, 'especial')"
+      [attr.stroke]="selectedSector()?.id === s.id ? '#fff' : 'rgba(255,255,255,0.09)'"
+      stroke-width="1.2"/>
+
+    <text x="525" y="510"
+      text-anchor="middle"
+      class="sector-label-xs">
+      J.WALK
+    </text>
+  </g>
+}
+
+<!-- ============================================================ -->
+<!-- ESCENARIO                          -->
+<!-- =========================================================== -->
+<g>
+  <rect x="560" y="300" width="60" height="180" rx="10"
+    fill="url(#stageGrad)"
+    stroke="rgba(255,255,255,0.13)"
+    stroke-width="1.5"/>
+
+  <text x="585" y="380"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    transform="rotate(-90 590 380)"
+    class="stage-label">
+    ESCENARIO
+  </text>
+</g>
+
+</g>
+</svg>
+    
+  </div>
+
+  <!-- LEYENDA -->
+  <div class="arena-legend">
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#3b5880"></span>
+      <span>Sectores 301–323 · Grada Superior</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#7a6232"></span>
+      <span>Palcos VIP</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#2a6060"></span>
+      <span>Sectores 101–122 · Grada Inferior</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#2a3d5c"></span>
+      <span>Pista</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#1e1e2e"></span>
+      <span>Front Stage</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#506c81"></span>
+      <span>Club</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#745e3e"></span>
+      <span>Johnie Walker</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#1e1e2e"></span>
+      <span>No disponible</span>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL ASIENTOS                                               -->
+  <!-- ============================================================ -->
+  @if (selectedSector()) {
+    <div class="seats-overlay" (click)="closeSectorPanel($event)">
+      <div class="seats-panel" (click)="$event.stopPropagation()">
+
+      <div class="seats-panel-header">
+          <div>
+            <h3 class="seats-panel-title">{{ selectedSector()!.nombre }}</h3>
+            <p class="seats-panel-sub">
+              {{ selectedSector()!.precio?.toFixed(2) }}€ por asiento
+              @if (selectedSeatsCount() > 0) {
+                · <span class="selected-count">{{ selectedSeatsCount() }} seleccionado{{ selectedSeatsCount() > 1 ? 's' : '' }}</span>
+              }
+            </p>
+          </div>
+          <button class="close-btn" (click)="closeSectorPanel($event)">✕</button>
+      </div>
+
+  <div class="seats-panel-body">
+    @if (loadingSeats()) {
+      <div class="seats-loading-overlay">
+        <div class="seats-loading-box">
+          <div class="spinner"></div>
+          <p>Cargando asientos...</p>
+        </div>
+      </div>
+    }
+    <seat-grid
+      [asientosPorFila]="asientosPorFila()"
+      [filas]="filasOrdenadas()"
+      [selected]="selectedSeatIds()"
+      (seatSelected)="onSeatSelected($event)"
+      [loading]="loadingSeats()"
+    />
+  </div>
+
+  @if (selectedSeatsCount() > 0) {
+      <div class="seats-panel-footer">
+        <div class="selected-chips">
+            @for (seat of selectedSeats(); track seat.id) {
+              @if (seat._sectorId === selectedSector()!.id) {
+                <span class="chip">
+                  @if (seat.fila != null) { F{{ seat.fila }}· }
+                  A{{ seat.numero }}
+                  <button (click)="removeSeat(seat)" class="chip-remove">✕</button>
+                </span>
+              }
+            }
+          </div>
+          <button class="btn-done" (click)="closeSectorPanel($event)">
+            Listo · {{ totalSeleccion().toFixed(2) }}€
+          </button>
+        </div>
+      }
+
+      </div>
+    </div>
+  }
+
+</div>

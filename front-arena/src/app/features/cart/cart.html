@@ -1,0 +1,181 @@
+<div class="min-h-screen bg-bg px-6 py-8"
+     style="background-image: radial-gradient(ellipse 800px 500px at 50% -5%, rgba(232,88,26,0.05) 0%, transparent 60%)">
+  <div class="max-w-[860px] mx-auto">
+
+    <!-- TOAST EXPIRADO -->
+    @if (showExpiredToast) {
+      <div class="fixed top-[72px] right-5 z-[200] bg-error/10 border border-error/30 rounded-xl shadow-md px-[18px] py-4 max-w-[340px] flex items-start gap-3"
+           style="animation: toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+        <div class="w-8 h-8 bg-error/10 rounded-md flex items-center justify-center text-lg flex-shrink-0">⏰</div>
+        <div>
+          <p class="text-[13px] font-bold text-text-primary mb-0.5">Tu reserva ha expirado</p>
+          <p class="text-[12px] text-text-secondary">Los asientos han sido liberados</p>
+        </div>
+      </div>
+    }
+
+    <!-- PAGE HEADER -->
+    <div class="mb-8">
+      <p class="text-[11px] font-bold tracking-[3px] uppercase text-brand mb-2">Compra</p>
+      <h1 class="text-[28px] font-extrabold tracking-tight text-text-primary">Mi carrito</h1>
+    </div>
+
+    <!-- CARRITO VACÍO -->
+    @if (groupedItems().length === 0) {
+      <div class="bg-surface-1 border border-[var(--border)] rounded-2xl p-16 text-center">
+        <p class="text-[40px] mb-4">🛒</p>
+        <p class="text-[16px] font-semibold text-text-primary mb-1.5">Tu carrito está vacío</p>
+        <p class="text-[13px] text-text-secondary">Explora los eventos y añade tus asientos</p>
+      </div>
+    }
+
+    <!-- TIMER BAR -->
+    @if (cart.hasActiveCart() && !cart.isLoading()) {
+      <div class="rounded-xl border px-5 py-4 mb-6 flex items-center justify-between gap-4 transition-all duration-300"
+           [ngClass]="{
+             'bg-warning/10 border-warning/35': !timerUrgente(),
+             'bg-error/10 border-error/30 animate-pulse': timerUrgente()
+           }">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-md flex items-center justify-center text-lg flex-shrink-0"
+               [ngClass]="timerUrgente() ? 'bg-error/10' : 'bg-warning/10'">
+            ⏳
+          </div>
+          <div>
+            <p class="text-[13px] font-semibold"
+               [ngClass]="timerUrgente() ? 'text-error' : 'text-warning'">
+              Tiempo para completar tu compra
+            </p>
+            <p class="text-[12px] text-text-secondary">Los asientos se liberarán si no pagas a tiempo</p>
+          </div>
+        </div>
+        <span class="text-[28px] font-mono font-extrabold tracking-wider flex-shrink-0"
+              [ngClass]="timerUrgente() ? 'text-error' : 'text-warning'">
+          {{ timerFormatted() }}
+        </span>
+      </div>
+    }
+
+    <!-- GRUPOS DE EVENTOS -->
+    @for (group of groupedItems(); track group.event.id) {
+      <div class="bg-surface-1 border border-[var(--border)] rounded-xl overflow-hidden mb-4">
+        <div class="px-6 py-4 border-b border-[var(--border)]">
+          <h2 class="text-[17px] font-extrabold tracking-tight text-text-primary">{{ group.event.nombre }}</h2>
+          <p class="text-[12px] text-text-secondary mt-0.5">📅 {{ group.event.fecha }}</p>
+        </div>
+
+        <div class="p-4 flex flex-col gap-2">
+          @for (seat of group.seats; track seat.id) {
+            <div class="flex items-center justify-between bg-surface-2 rounded-md px-4 py-3 border border-[var(--border)]">
+              <div>
+                <p class="text-[14px] font-semibold text-text-primary">{{ nombreAsiento(seat) }}</p>
+                <p class="text-[12px] text-text-secondary">{{ seat.sector }}</p>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="inline-flex items-center gap-1.5 bg-[var(--brand-dim)] border border-[var(--brand-border)] text-brand px-3 py-1 rounded-full text-[13px] font-extrabold">
+                  {{ seat.precio.toFixed(2) }} €
+                </span>
+                <button
+                  (click)="remove(group.event.id, seat.id, seat.reservaId || 0)"
+                  [disabled]="cart.isLoading() || cart.isProcessing() || cart.isPurchasing()"
+                  class="w-7 h-7 flex items-center justify-center rounded-md text-text-muted hover:text-error hover:bg-error/10 transition-all duration-150 disabled:opacity-40 text-[13px] font-bold">
+                  ✕
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- RESUMEN TOTAL -->
+    @if (groupedItems().length > 0) {
+      <div class="bg-surface-1 border border-border-md rounded-xl p-6 mt-2">
+        <div class="flex justify-between items-center mb-5">
+          <p class="text-[17px] font-extrabold text-text-primary">Total</p>
+          <p class="text-[26px] font-black text-brand tracking-tight">{{ total().toFixed(2) }} €</p>
+        </div>
+        <div class="flex gap-3">
+          <button
+            (click)="openConfirmClear()"
+            [disabled]="cart.isLoading() || cart.isProcessing() || cart.isPurchasing()"
+            class="bg-error/10 hover:bg-error/20 text-error border border-error/30 text-[13px] font-bold px-5 py-3 rounded-md transition-all duration-150 disabled:opacity-40">
+            Anular reserva
+          </button>
+          <button
+            (click)="openConfirm()"
+            [disabled]="cart.isLoading() || cart.isProcessing() || cart.isPurchasing()"
+            class="flex-1 bg-brand hover:bg-[#cf4d16] disabled:opacity-45 text-white text-[14px] font-bold py-3 rounded-md transition-all duration-150 hover:-translate-y-px hover:shadow-brand">
+            {{ cart.isPurchasing() ? 'Procesando...' : 'Comprar entradas' }}
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- MODAL CONFIRMAR COMPRA -->
+    @if (showConfirmPurchase) {
+      <div class="fixed inset-0 bg-black/50 backdrop-blur-[6px] flex items-center justify-center z-50 p-5"
+           style="animation: fadeIn 0.15s ease">
+        <div class="bg-surface-1 border border-border-md rounded-2xl shadow-lg p-7 w-full max-w-md"
+             style="animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1)">
+          <h2 class="text-[18px] font-extrabold text-text-primary mb-2.5">¿Confirmar compra?</h2>
+          <p class="text-[13px] text-text-secondary mb-5">Se procesará el pago por el total de tu carrito.</p>
+          <div class="flex gap-2.5">
+            <button (click)="closeConfirm()"
+              class="flex-1 bg-transparent hover:bg-surface-3 text-text-secondary border border-[var(--border)] hover:border-border-md py-2.5 rounded-md transition-all duration-150 font-semibold text-[13px]">
+              Volver
+            </button>
+            <button (click)="confirmBuy()"
+              class="flex-1 bg-brand hover:bg-[#cf4d16] text-white py-2.5 rounded-md transition-all duration-150 font-bold text-[13px] hover:-translate-y-px">
+              Sí, comprar
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- MODAL ANULAR RESERVA -->
+    @if (showConfirmClear) {
+      <div class="fixed inset-0 bg-black/50 backdrop-blur-[6px] flex items-center justify-center z-50 p-5"
+           style="animation: fadeIn 0.15s ease">
+        <div class="bg-surface-1 border border-border-md rounded-2xl shadow-lg p-7 w-full max-w-md"
+             style="animation: slideUp 0.25s cubic-bezier(0.34,1.56,0.64,1)">
+          <h2 class="text-[18px] font-extrabold text-text-primary mb-2.5">¿Anular la reserva?</h2>
+          <p class="text-[13px] text-text-secondary mb-5">Los asientos se liberarán inmediatamente y podrías perderlos.</p>
+          <div class="flex gap-2.5">
+            <button (click)="closeConfirmClear()"
+              class="flex-1 bg-transparent hover:bg-surface-3 text-text-secondary border border-[var(--border)] hover:border-border-md py-2.5 rounded-md transition-all duration-150 font-semibold text-[13px]">
+              Volver
+            </button>
+            <button (click)="confirmClear()"
+              class="flex-1 bg-error/10 hover:bg-error/20 text-error border border-error/30 py-2.5 rounded-md transition-all duration-150 font-bold text-[13px]">
+              Sí, anular
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- OVERLAY CARGA -->
+    @if (cart.isProcessing() || cart.isLoading() || cart.isPurchasing()) {
+      <div class="fixed inset-0 bg-black/40 backdrop-blur-[6px] flex items-center justify-center z-50">
+        <div class="bg-surface-1 border border-border-md rounded-2xl shadow-lg px-8 py-6 text-center min-w-[280px]">
+          <div class="w-8 h-8 rounded-full border-[2.5px] border-border-md border-t-brand animate-spin mx-auto mb-3"></div>
+          @if (cart.isPurchasing()) {
+            <p class="font-bold text-[15px] text-text-primary">Procesando compra...</p>
+            <p class="text-[13px] text-text-secondary mt-1">No cierres la página</p>
+          }
+          @if (cart.isProcessing() && !cart.isPurchasing()) {
+            <p class="font-bold text-[15px] text-text-primary">Actualizando carrito...</p>
+            <p class="text-[13px] text-text-secondary mt-1">Liberando reservas</p>
+          }
+          @if (cart.isLoading() && !cart.isProcessing() && !cart.isPurchasing()) {
+            <p class="font-bold text-[15px] text-text-primary">Cargando...</p>
+            <p class="text-[13px] text-text-secondary mt-1">Sincronizando datos</p>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

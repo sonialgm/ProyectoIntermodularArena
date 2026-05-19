@@ -1,0 +1,16 @@
+.env
+.env.*
+
+# Laravel
+arena2/vendor/
+arena2/storage/
+arena2/bootstrap/cache/
+
+# Angular
+front-arena/node_modules/
+front-arena/dist/
+front-arena/.angular/
+
+# OS
+.vscode/
+.DS_Store

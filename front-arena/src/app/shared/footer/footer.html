@@ -1,0 +1,40 @@
+<footer class="border-t border-[var(--border)] bg-bg mt-auto">
+  <div class="max-w-[1100px] mx-auto px-6 py-8">
+
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+
+      <!-- LOGO + COPYRIGHT -->
+      <div class="flex flex-col gap-2">
+        <img
+          src="/images/logo_arena.svg"
+          class="h-7 w-auto"
+          [ngClass]="isLightMode() ? 'brightness-0' : 'brightness-100'"
+          alt="Roig Arena"
+        />
+        <p class="text-[12px] text-text-muted">© 2026 Proyecto Intermodular · Venta de Entradas del Roig Arena · Todos los derechos reservados.</p>
+        <p class="text-[11px] text-text-muted">
+          Desarrollado por Sonia Luján: estudiante de DAW en IES La Sénia.
+        </p>
+      </div>
+
+        <!-- CONTACTO -->
+        <div class="flex flex-col gap-2">
+        <a routerLink="/contacto"
+            class="text-[11px] font-bold tracking-[3px] uppercase text-brand hover:text-brand/70 transition-colors duration-150">
+            Contacto
+        </a>
+        <a href="mailto:roigarena@contacto.com"
+            class="flex items-center gap-2 text-[13px] text-text-secondary hover:text-text-primary transition-colors duration-150">
+            <span>✉️</span> roigarena@contacto.com
+        </a>
+        <a href="https://maps.google.com/?q=Calle+del+Bomber+Ramón+Duart,12,Valencia"
+            target="_blank"
+            class="flex items-center gap-2 text-[13px] text-text-secondary hover:text-text-primary transition-colors duration-150">
+            <span>📍</span> C/ Bomber Ramón Duart, 12 · Valencia
+        </a>
+        </div>
+
+    </div>
+
+  </div>
+</footer>

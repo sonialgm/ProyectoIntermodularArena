@@ -1,0 +1,214 @@
+<div class="flex flex-col">
+
+  @if (loading()) {
+
+    <div class="flex flex-col gap-3 py-2 animate-pulse">
+      <div class="flex items-center justify-center gap-2 mb-2">
+        <svg
+          class="w-4 h-4 text-gray-400 animate-spin"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8z"
+          />
+        </svg>
+
+        <span class="text-sm text-gray-400 font-medium">
+          Cargando asientos...
+        </span>
+      </div>
+
+      @for (r of skeletonRows(); track r) {
+
+        <div class="flex items-center gap-2 px-1">
+
+          <!-- Label -->
+          <div class="w-6 h-3 rounded bg-gray-200"></div>
+
+          <!-- Seats -->
+          <div class="flex gap-[5px]">
+
+            @for (c of skeletonCols(); track c) {
+
+              <div
+                class="w-[22px] h-[22px] sm:w-[28px] sm:h-[28px]
+                       rounded-md bg-gray-200"
+                [style.opacity]="0.4 + (c % 3) * 0.2"
+              >
+              </div>
+            }
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- CONTENT -->
+  @if (!loading()) {
+
+    <!-- LEYENDA -->
+    <div class="flex flex-wrap gap-x-4 gap-y-1.5 pb-3 border-b border-gray-100 mb-3.5">
+
+      <span class="flex items-center gap-1.5 text-[11.5px] text-gray-500 font-medium">
+        <span class="w-3.5 h-3.5 rounded bg-[#b8d4f0] border border-[#7aaad8]"></span>
+        Libre
+      </span>
+
+      <span class="flex items-center gap-1.5 text-[11.5px] text-gray-500 font-medium">
+        <span class="w-3.5 h-3.5 rounded bg-[#E8581A]"></span>
+        Seleccionado
+      </span>
+
+      <span class="flex items-center gap-1.5 text-[11.5px] text-gray-500 font-medium">
+        <span class="w-3.5 h-3.5 rounded bg-amber-300 border border-amber-500"></span>
+        Reservado
+      </span>
+
+      <span class="flex items-center gap-1.5 text-[11.5px] text-gray-500 font-medium">
+        <span class="w-3.5 h-3.5 rounded bg-[#b8bfcc] border border-[#9aa0b0]"></span>
+        Ocupado
+      </span>
+
+    </div>
+
+    <!-- ESCENARIO -->
+    <div class="flex items-center gap-2.5 mb-4 px-1">
+
+      <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+
+      <span
+        class="text-[8px] sm:text-[9.5px]
+               font-extrabold tracking-[2px] sm:tracking-[3.5px]
+               text-gray-400 uppercase
+               px-3 py-1.5 border border-gray-200
+               rounded-full bg-gray-50 whitespace-nowrap"
+      >
+        Escenario
+      </span>
+
+      <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+
+    </div>
+
+    <!-- GRID -->
+    <div
+      class="overflow-x-auto pb-1
+             [scrollbar-width:thin]
+             [scrollbar-color:#dde2ec_transparent]"
+    >
+
+      <div class="flex flex-col gap-1 min-w-max px-1">
+
+        <!-- EMPTY -->
+        @if (filasOrdenadas().length === 0) {
+
+          <div class="flex flex-col items-center gap-2.5 py-10 text-gray-400 text-sm text-center">
+
+            <span class="text-4xl opacity-40">🪑</span>
+
+            <p>No hay asientos disponibles para este sector</p>
+
+          </div>
+
+        }
+
+        <!-- FILAS -->
+        @for (fila of filasOrdenadas(); track fila) {
+
+          <div class="flex items-center gap-2">
+
+            <!-- LABEL IZQ -->
+            <span
+              class="w-[20px] sm:w-[26px]
+                     shrink-0 text-center
+                     text-[10px] sm:text-[11px]
+                     font-bold text-gray-400
+                     tabular-nums leading-none"
+            >
+              {{ filaLabel(fila) }}
+            </span>
+
+            <!-- ASIENTOS -->
+            <div class="flex gap-[3px] sm:gap-[5px]">
+
+              @for (seat of asientosPorFila()[fila]; track seat.id) {
+
+                <button
+                  [class]="getSeatClasses(seat)"
+                  [disabled]="!canSelect(seat)"
+                  [title]="'Fila ' + fila + ' · Asiento ' + seat.numero"
+                  [attr.aria-label]="'Fila ' + fila + ' asiento ' + seat.numero"
+                  (click)="onSeatClick(seat)"
+                >
+                  {{ seat.numero }}
+                </button>
+
+              }
+
+            </div>
+
+            <!-- LABEL DER -->
+            <span
+              class="w-[20px] sm:w-[26px]
+                     shrink-0 text-center
+                     text-[10px] sm:text-[11px]
+                     font-bold text-gray-400
+                     tabular-nums leading-none"
+            >
+              {{ filaLabel(fila) }}
+            </span>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+    <!-- STATS -->
+<div class="flex flex-col gap-1 pt-3 mt-3 border-t border-gray-100">
+
+  <!-- LOCAL -->
+  <div class="flex items-center gap-2 text-xs text-gray-500">
+    <span class="w-2 h-2 rounded-full bg-[#7aaad8]"></span>
+    <span>
+      Disponibles en este sector:
+      <span class="font-bold text-gray-700">{{ totalLibres() }}</span>
+    </span>
+  </div>
+
+  <!-- GLOBAL -->
+@if (totalSeleccionados() > 0) {
+  <div class="flex items-center gap-2 text-xs font-semibold text-[#E8581A]">
+
+    <span class="w-2 h-2 rounded-full bg-[#E8581A]"></span>
+
+    <span>
+      En tu carrito:
+      <span class="font-bold">
+        {{ totalSeleccionados() }}/6
+      </span>
+      asientos
+    </span>
+
+  </div>
+}
+
+</div>
+
+  }
+
+</div>

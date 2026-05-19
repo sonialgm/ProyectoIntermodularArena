@@ -1,0 +1,91 @@
+@import 'ngx-toastr/toastr';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -----------------------------------------------
+   THEME SYSTEM (DEFAULT = DARK)
+  ------------------------------------------------ */
+
+:root {
+
+  /* BRAND */
+  --brand: #E8581A;
+  --brand-hover: #cf4d16;
+  --brand-dim: rgba(232,88,26,0.15);
+  --brand-border: rgba(232,88,26,0.35);
+
+  /* SURFACES (DARK DEFAULT) */
+  --bg: #0c0d14;
+  --surface-1: #13141f;
+  --surface-2: #1a1c2a;
+  --surface-3: #222435;
+  --surface-4: #2a2d3e;
+
+  /* BORDER */
+  --border: rgba(255,255,255,0.07);
+  --border-md: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.20);
+
+  /* TEXT */
+  --text-primary: #f0f1f5;
+  --text-secondary: #8e93a8;
+  --text-muted: #5a5f72;
+
+  /* STATUS */
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+
+  /* SHADOWS */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-lg: 0 24px 64px rgba(0,0,0,0.6);
+
+  --font: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ----------------------------------------------
+   LIGHT MODE (override)
+   se activa con body.light
+   ---------------------------------------------- */
+
+body.light {
+
+  --bg: #f6f7fb;
+
+  --surface-1: #ffffff;
+  --surface-2: #f1f3f7;
+  --surface-3: #e9ecf2;
+  --surface-4: #dde2ea;
+
+  --border: rgba(15,23,42,0.08);
+  --border-md: rgba(15,23,42,0.12);
+  --border-strong: rgba(15,23,42,0.18);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 24px 48px rgba(0,0,0,0.10);
+}
+
+/* RESET */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* BODY */
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font);
+  line-height: 1.5;
+  transition: background 0.25s ease, color 0.25s ease;
+}
