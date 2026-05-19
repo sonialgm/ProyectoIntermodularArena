@@ -28,7 +28,6 @@ services:
     build:
       context: './front-arena'
       dockerfile: Dockerfile
-    container_name: angular_app
 
     ports:
       - "4200:4200"
@@ -46,7 +45,6 @@ services:
   # ── Nginx (proxy inverso) ──────────────────────────────────────
   nginx:
     image: nginx:alpine
-    container_name: nginx_proxy
     ports:
       - "80:80"
     volumes:
